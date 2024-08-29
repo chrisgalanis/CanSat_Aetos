@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+
+        <head>
+            <meta http-equiv= "content-type" content="text/html; charset=UTF-8"/>
+            <script src="index.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+            <script src="/socket.io/socket.io.js"></script>
+
+        </head>
+
+    <body>
+     <canvas id="chart" width="400" height="400"></canvas>
+     <canvas id="chart1" width="400" height="400"></canvas>
+      <canvas id="chart2" width="400" height="400"></canvas>
+     <canvas id="chart3" width="400" height="400"></canvas>
+     <canvas id="chart4" width="400" height="400"></canvas>
+
+
+    <script>
+        const socket = io();
+       
+        socket.on('arduino:data', function(data){
+        var H = new Date();
+        chart.data.labels.push(H.getHours()+ "-" + H.getMinutes() + "-" + H.getSeconds());
+        chart1.data.labels.push(H.getHours()+ "-" + H.getMinutes() + "-" + H.getSeconds());
+        chart2.data.labels.push(H.getHours()+ "-" + H.getMinutes() + "-" + H.getSeconds());
+
+       
+        var Data = [data.value] ;
+        console.log(Data);
+        var temp ; 
+        var pres;
+        var alt;
+        var gps;
+        console.log(Data[0].charAt(0));
+       // console.log(Data.charAt(0));
+
+        var DataA = Data[0].charAt(0);
+        if (DataA == 'P'){
+           //console.log("Hello A");
+            pres = Data[0].slice(1);
+           console.log(pres);
+           chart.data.datasets.forEach(dataset => {dataset.data.push(pres)});
+        }
+
+         if(DataA == 'T'){
+           //console.log("Hello B");
+           temp = Data[0].slice(1);
+           console.log(temp);
+           chart1.data.datasets.forEach(dataset => {dataset.data.push(temp)});
+           chart3.data.datasets.forEach(dataset => {dataset.data.push(temp)});
+        }
+
+          if(DataA == 'A'){
+           //console.log("Hello B");
+           alt = Data[0].slice(1);
+           console.log(alt);
+           chart2.data.datasets.forEach(dataset => {dataset.data.push(alt)});
+           chart3.data.labels.push(alt);
+        }
+
+          if(DataA == 'G'){
+           //console.log("Hello B");
+           gps = Data[0].slice(1);
+           console.log(gps);
+           chart2.data.datasets.forEach(dataset => {dataset.data1.push(gps)});
+        }
+
+
+
+
+        //var sNum =  AD.substr(3+x2,4+x2);
+    
+        chart.update();
+        chart1.update();
+        chart2.update();
+        chart3.update();
+    
+        });
+        
+      
+        
+
+
+        const  pres = document.getElementById('chart').getContext('2d');
+        var chart = new Chart(pres, {
+        type: 'line',
+        data: {
+        labels:["Serial"],
+        datasets: [{
+            label: "Pressure (Pa) - Time (s)",
+            data:[],
+            backgroundColor: '#fff',
+            borderColor: 'rgba( 243, 18, 156 , 1)',
+            borderWidth:2
+
+        }],
+
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            }
+        });
+
+        const  temp = document.getElementById('chart1').getContext('2d');
+        var chart1 = new Chart(temp, {
+        type: 'line',
+        data: {
+        labels:["Serial"],
+        datasets: [{
+            label: "Temp (°C) - Time (s)",
+            data:[],
+            backgroundColor: '#fff',
+            borderColor: '#DC143C',
+            borderWidth:2
+
+        }],
+
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            }
+        });
+
+
+         const  alt = document.getElementById('chart2').getContext('2d');
+        var chart2 = new Chart(alt, {
+        type: 'line',
+        data: {
+        labels:["Serial"],
+        datasets: [{
+            label: "Altitude (m) - Time (s)",
+            data:[],
+            backgroundColor: '#fff',
+            borderColor: '#006400',
+            borderWidth:2
+
+        },{
+            label: "GPS (m) - Time (s)",
+            data1:[],
+            backgroundColor: '#fff',
+            borderColor: '#A9A9A9',
+            borderWidth:2
+
+        }],
+
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            }
+        });
+
+
+         const temp_alt  = document.getElementById('chart3').getContext('2d');
+        var chart3 = new Chart(temp_alt, {
+        type: 'line',
+        data: {
+        labels:["Serial"],
+        datasets: [{
+            label: "Temp (°C) - Altitude (m)",
+            data:[],
+            backgroundColor: '#fff',
+            borderColor: '#E9967A',
+            borderWidth:2
+
+        }],
+
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            }
+        });
+
+
+    </script>
+
+    </body>
+</html>
+ 
